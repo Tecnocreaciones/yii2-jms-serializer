@@ -1,5 +1,5 @@
 {
-    "name": "krtv/yii2-jms-serializer",
+    "name": "tecnoready/yii2-jms-serializer",
     "description": "JMS Serializer extension for the Yii framework",
     "type": "yii2-extension",
     "keywords": [
@@ -28,7 +28,7 @@
 
         "yiisoft/yii2": "*",
 
-        "jms/serializer": "~1.0.0|~0.16.0"
+        "jms/serializer": "~1.*"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0"
