@@ -78,6 +78,7 @@ class Bootstrap implements BootstrapInterface
 
             ],
         ],
+        'subscribers' => []
     ];
 
     /**
@@ -96,15 +97,19 @@ class Bootstrap implements BootstrapInterface
         $app->set('serializer', $definition);
 
         $container = \Yii::$container;
-
+        
         if (!$container->has(self::getMetadataDirectoryBagId())) {
             $container->setSingleton(self::getMetadataDirectoryBagId(), function () {
                 return new LocatorDirectoryBag();
             });
         }
 
-        $container->setSingleton(self::getEventDispatcherId(), function (Container $container) {
-            return new LazyEventDispatcher($container);
+        $container->setSingleton(self::getEventDispatcherId(), function (Container $container) use ($definition) {
+            $dispatcher = new LazyEventDispatcher($container);
+            foreach ($definition["subscribers"] as $subscriber) {
+                $dispatcher->addSubscriber(new $subscriber());
+            }
+            return $dispatcher;
         });
 
         $container->setSingleton(self::getVisitorId(GraphNavigator::DIRECTION_SERIALIZATION, 'json'), function (Container $container, array $params, array $config) {
@@ -271,8 +276,6 @@ class Bootstrap implements BootstrapInterface
             foreach ($config['formats'] as $format) {
                 $deserializationVisitors->set($format, $container->get(self::getVisitorId(GraphNavigator::DIRECTION_DESERIALIZATION, $format), [], $config));
             }
-//            var_dump($serializationVisitors);
-//            die;
 
             $jmsSerializer = new JMSSerializer(
                 $metadataFactory,
@@ -282,7 +285,6 @@ class Bootstrap implements BootstrapInterface
                 $deserializationVisitors,
                 $eventDispatcher
             );
-
             return new Serializer($jmsSerializer);
         });
     }
