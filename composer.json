@@ -23,6 +23,7 @@
         "issues": "https://github.com/krtv/yii2-jms-serializer/issues",
         "source": "https://github.com/krtv/yii2-jms-serializer"
     },
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.5",
 
