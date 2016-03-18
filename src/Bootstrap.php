@@ -144,7 +144,7 @@ class Bootstrap implements BootstrapInterface
             $locator = new FileLocator($dirs);
 
             return new DriverChain([
-                new YamlDriver($locator),
+                new metadata\driver\YiiYamlDriver($locator),
                 new XmlDriver($locator),
                 new PhpDriver($locator),
             ]);
@@ -262,7 +262,6 @@ class Bootstrap implements BootstrapInterface
             $handlerRegistry = $container->get(self::getHandlerRegistryId(), [], $config['handlers']);
             $objConstructor  = $container->get(self::getUnserializeObjectConstructorId());
             $eventDispatcher = $container->get(self::getEventDispatcherId());
-
             $serializationVisitors = new \PhpCollection\Map();
             foreach ($config['formats'] as $format) {
                 $serializationVisitors->set($format, $container->get(self::getVisitorId(GraphNavigator::DIRECTION_SERIALIZATION, $format), [], $config));
@@ -272,6 +271,8 @@ class Bootstrap implements BootstrapInterface
             foreach ($config['formats'] as $format) {
                 $deserializationVisitors->set($format, $container->get(self::getVisitorId(GraphNavigator::DIRECTION_DESERIALIZATION, $format), [], $config));
             }
+//            var_dump($serializationVisitors);
+//            die;
 
             $jmsSerializer = new JMSSerializer(
                 $metadataFactory,
