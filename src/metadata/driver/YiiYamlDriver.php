@@ -30,6 +30,28 @@ use Metadata\Driver\AbstractFileDriver;
 
 class YiiYamlDriver extends AbstractFileDriver
 {
+    private $myLocator;
+    public function __construct(\Metadata\Driver\FileLocatorInterface $locator)
+    {
+        parent::__construct($locator);
+        $this->myLocator = $locator;
+    }
+    
+    public function loadMetadataForClass(\ReflectionClass $class)
+    {
+        $repositoryClass = $class->name."Repository";
+        $classToSearch = $class;
+        //Si la clase repositorio existe entonces leemos y usuamos ese
+        if(class_exists($repositoryClass)){
+            $classToSearch = new \ReflectionClass($repositoryClass);
+        }
+        
+        if (null === $path = $this->myLocator->findFileForClass($classToSearch, $this->getExtension())) {
+            return null;
+        }
+        return $this->loadMetadataFromFile($classToSearch, $path);
+    }
+    
     protected function loadMetadataFromFile(\ReflectionClass $class, $file)
     {
         $config = Yaml::parse(file_get_contents($file));
