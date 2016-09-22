@@ -43,6 +43,10 @@ class LazyLoadingDriver implements DriverInterface
      */
     public function loadMetadataForClass(\ReflectionClass $class)
     {
-        return $this->container->get($this->realDriverId, [], $this->config)->loadMetadataForClass($class);
+        $metadata = $this->container->get($this->realDriverId, [], $this->config)->loadMetadataForClass($class);
+        if($metadata === null){
+            $metadata = new \JMS\Serializer\Metadata\ClassMetadata($class->getName());
+        }
+        return $metadata;
     }
 }
